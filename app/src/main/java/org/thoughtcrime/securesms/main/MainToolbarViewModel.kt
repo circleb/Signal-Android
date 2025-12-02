@@ -98,6 +98,10 @@ class MainToolbarViewModel : ViewModel() {
     setToolbarMode(MainToolbarMode.FULL, destination = MainNavigationListLocation.CALLS)
   }
 
+  fun presentToolbarForPortal() {
+    setToolbarMode(MainToolbarMode.FULL, destination = MainNavigationListLocation.PORTAL)
+  }
+
   fun presentToolbarForMultiselect() {
     setToolbarMode(MainToolbarMode.ACTION_MODE)
   }

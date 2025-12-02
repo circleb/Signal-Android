@@ -36,6 +36,7 @@ import org.signal.core.ui.compose.theme.SignalTheme
 @Composable
 fun WebAppsListScreen(
   repository: WebAppRepository,
+  searchQuery: String = "",
   modifier: Modifier = Modifier
 ) {
   var webApps by remember { mutableStateOf<List<WebApp>?>(null) }
@@ -52,6 +53,20 @@ fun WebAppsListScreen(
         error = e.message ?: "Unknown error"
         isLoading = false
       }
+  }
+
+  val filteredWebApps = remember(webApps, searchQuery) {
+    if (webApps == null || searchQuery.isBlank()) {
+      webApps
+    } else {
+      val query = searchQuery.lowercase().trim()
+      webApps!!.filter { app ->
+        app.name.lowercase().contains(query) ||
+        app.description.lowercase().contains(query) ||
+        app.category?.lowercase()?.contains(query) == true ||
+        app.type?.lowercase()?.contains(query) == true
+      }
+    }
   }
 
   when {
@@ -74,13 +89,13 @@ fun WebAppsListScreen(
         )
       }
     }
-    webApps != null -> {
+    filteredWebApps != null -> {
       LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
       ) {
-        items(webApps!!) { app ->
+        items(filteredWebApps!!) { app ->
           WebAppItem(app = app)
         }
       }

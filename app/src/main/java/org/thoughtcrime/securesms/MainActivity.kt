@@ -320,7 +320,7 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
 
       LaunchedEffect(mainNavigationState.currentListLocation) {
         when (mainNavigationState.currentListLocation) {
-          MainNavigationListLocation.PORTAL -> Unit // Portal doesn't need toolbar
+          MainNavigationListLocation.PORTAL -> toolbarViewModel.presentToolbarForPortal()
           MainNavigationListLocation.CHATS -> toolbarViewModel.presentToolbarForConversationListFragment()
           MainNavigationListLocation.ARCHIVE -> toolbarViewModel.presentToolbarForConversationListArchiveFragment()
           MainNavigationListLocation.CALLS -> toolbarViewModel.presentToolbarForCallLogFragment()
@@ -586,6 +586,7 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
                     val repository = remember { WebAppRepository(AppDependencies.okHttpClient) }
                     WebAppsListScreen(
                       repository = repository,
+                      searchQuery = mainToolbarState.searchQuery,
                       modifier = Modifier.fillMaxSize()
                     )
                   }
