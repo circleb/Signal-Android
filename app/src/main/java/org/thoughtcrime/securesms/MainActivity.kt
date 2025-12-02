@@ -354,9 +354,9 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
         }
       }
 
-      val mainBottomChromeState = remember(mainToolbarState.destination, snackbar, mainToolbarState.mode, megaphone) {
+      val mainBottomChromeState = remember(mainNavigationState.currentListLocation, snackbar, mainToolbarState.mode, megaphone) {
         MainBottomChromeState(
-          destination = mainToolbarState.destination,
+          destination = mainNavigationState.currentListLocation,
           snackbarState = snackbar,
           mainToolbarMode = mainToolbarState.mode,
           megaphoneState = MainMegaphoneState(

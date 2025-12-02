@@ -96,7 +96,8 @@ fun MainFloatingActionButtons(
       elevation = shadowElevation
     )
 
-    Box(
+    AnimatedVisibility(
+      visible = destination != MainNavigationListLocation.PORTAL,
       modifier = Modifier.align(primaryButtonAlignment)
     ) {
       PrimaryActionButton(
