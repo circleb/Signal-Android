@@ -264,6 +264,10 @@ class MainNavigationViewModel(
     return notificationProfilesRepository.getProfiles().asFlow()
   }
 
+  fun onPortalSelected() {
+    onTabSelected(MainNavigationListLocation.PORTAL)
+  }
+
   fun onChatsSelected() {
     onTabSelected(MainNavigationListLocation.CHATS)
   }

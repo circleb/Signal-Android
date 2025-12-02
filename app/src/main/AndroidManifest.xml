@@ -718,6 +718,11 @@
             android:exported="false"
             android:theme="@style/Signal.DayNight.NoActionBar" />
 
+    <activity
+            android:name=".webapps.WebAppsListActivity"
+            android:exported="false"
+            android:theme="@style/Signal.DayNight.NoActionBar" />
+
     <activity android:name=".PushContactSelectionActivity"
               android:label="@string/AndroidManifest__select_contacts"
               android:windowSoftInputMode="stateHidden"

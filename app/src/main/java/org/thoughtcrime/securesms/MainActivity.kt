@@ -172,6 +172,7 @@ import org.thoughtcrime.securesms.util.Material3OnScrollHelper
 import org.thoughtcrime.securesms.util.SplashScreenUtil
 import org.thoughtcrime.securesms.util.TopToastPopup
 import org.thoughtcrime.securesms.util.Util
+import org.thoughtcrime.securesms.dependencies.AppDependencies
 import org.thoughtcrime.securesms.util.viewModel
 import org.thoughtcrime.securesms.window.AppPaneDragHandle
 import org.thoughtcrime.securesms.window.AppScaffold
@@ -180,6 +181,8 @@ import org.thoughtcrime.securesms.window.AppScaffoldNavigator
 import org.thoughtcrime.securesms.window.NavigationType
 import org.thoughtcrime.securesms.window.isSplitPane
 import org.thoughtcrime.securesms.window.rememberThreePaneScaffoldNavigatorDelegate
+import org.thoughtcrime.securesms.webapps.WebAppRepository
+import org.thoughtcrime.securesms.webapps.WebAppsListScreen
 import org.whispersystems.signalservice.api.websocket.WebSocketConnectionState
 
 class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner, MainNavigator.NavigatorProvider, Material3OnScrollHelperBinder, ConversationListFragment.Callback, CallLogFragment.Callback, GooglePayComponent {
@@ -317,6 +320,7 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
 
       LaunchedEffect(mainNavigationState.currentListLocation) {
         when (mainNavigationState.currentListLocation) {
+          MainNavigationListLocation.PORTAL -> Unit // Portal doesn't need toolbar
           MainNavigationListLocation.CHATS -> toolbarViewModel.presentToolbarForConversationListFragment()
           MainNavigationListLocation.ARCHIVE -> toolbarViewModel.presentToolbarForConversationListArchiveFragment()
           MainNavigationListLocation.CALLS -> toolbarViewModel.presentToolbarForCallLogFragment()
@@ -448,6 +452,7 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
           when (mainNavigationDetailLocation) {
             is MainNavigationDetailLocation.Empty -> {
               when (mainNavigationState.currentListLocation) {
+                MainNavigationListLocation.PORTAL -> return@LaunchedEffect // Portal doesn't have nav host
                 MainNavigationListLocation.CHATS, MainNavigationListLocation.ARCHIVE -> chatsNavHostController
                 MainNavigationListLocation.CALLS -> callsNavHostController
                 MainNavigationListLocation.STORIES -> storiesNavHostController
@@ -577,6 +582,13 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
                 modifier = Modifier.weight(1f)
               ) {
                 when (val destination = mainNavigationState.currentListLocation) {
+                  MainNavigationListLocation.PORTAL -> {
+                    val repository = remember { WebAppRepository(AppDependencies.okHttpClient) }
+                    WebAppsListScreen(
+                      repository = repository,
+                      modifier = Modifier.fillMaxSize()
+                    )
+                  }
                   MainNavigationListLocation.CHATS -> {
                     val state = key(destination) { rememberFragmentState() }
                     AndroidFragment(
@@ -625,6 +637,9 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
           },
           primaryContent = {
             when (mainNavigationState.currentListLocation) {
+              MainNavigationListLocation.PORTAL -> {
+                // Portal doesn't have primary content
+              }
               MainNavigationListLocation.CHATS, MainNavigationListLocation.ARCHIVE -> {
                 DetailsScreenNavHost(
                   navHostController = chatsNavHostController,
@@ -781,6 +796,9 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
     val startingTab = extras.getSerializableCompat(KEY_STARTING_TAB, MainNavigationListLocation::class.java)
 
     when (startingTab) {
+      MainNavigationListLocation.PORTAL -> {
+        // Portal opens via navigation callback, not here
+      }
       MainNavigationListLocation.CHATS -> mainNavigationViewModel.onChatsSelected()
       MainNavigationListLocation.ARCHIVE -> mainNavigationViewModel.onArchiveSelected()
       MainNavigationListLocation.CALLS -> mainNavigationViewModel.onCallsSelected()
@@ -1201,6 +1219,7 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
   private inner class MainNavigationCallback : (MainNavigationListLocation) -> Unit {
     override fun invoke(location: MainNavigationListLocation) {
       when (location) {
+        MainNavigationListLocation.PORTAL -> mainNavigationViewModel.onPortalSelected()
         MainNavigationListLocation.CHATS -> mainNavigationViewModel.onChatsSelected()
         MainNavigationListLocation.CALLS -> mainNavigationViewModel.onCallsSelected()
         MainNavigationListLocation.STORIES -> mainNavigationViewModel.onStoriesSelected()

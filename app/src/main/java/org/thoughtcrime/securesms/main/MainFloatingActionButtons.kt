@@ -170,6 +170,7 @@ private fun PrimaryActionButton(
 ) {
   val onClick = remember(destination) {
     when (destination) {
+      MainNavigationListLocation.PORTAL -> { {} } // Portal doesn't need FAB
       MainNavigationListLocation.ARCHIVE -> onNewChatClick
       MainNavigationListLocation.CHATS -> onNewChatClick
       MainNavigationListLocation.CALLS -> onNewCallClick
@@ -185,6 +186,7 @@ private fun PrimaryActionButton(
     icon = {
       AnimatedContent(destination) { targetState ->
         val (icon, contentDescriptionId) = when (targetState) {
+          MainNavigationListLocation.PORTAL -> R.drawable.symbol_edit_24 to R.string.conversation_list_fragment__fab_content_description // Placeholder
           MainNavigationListLocation.ARCHIVE -> R.drawable.symbol_edit_24 to R.string.conversation_list_fragment__fab_content_description
           MainNavigationListLocation.CHATS -> R.drawable.symbol_edit_24 to R.string.conversation_list_fragment__fab_content_description
           MainNavigationListLocation.CALLS -> R.drawable.symbol_phone_plus_24 to R.string.CallLogFragment__start_a_new_call

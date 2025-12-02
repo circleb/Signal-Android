@@ -66,6 +66,10 @@ enum class MainNavigationListLocation(
   @RawRes val icon: Int,
   @StringRes val contentDescription: Int = label
 ) {
+  PORTAL(
+    label = R.string.ConversationListTabs__portal,
+    icon = R.raw.portal_28
+  ),
   CHATS(
     label = R.string.ConversationListTabs__chats,
     icon = R.raw.chats_28
@@ -119,6 +123,7 @@ fun MainNavigationBar(
     entries.forEach { destination ->
 
       val badgeCount = when (destination) {
+        MainNavigationListLocation.PORTAL -> 0
         MainNavigationListLocation.ARCHIVE -> error("Not supported")
         MainNavigationListLocation.CHATS -> state.chatsCount
         MainNavigationListLocation.CALLS -> state.callsCount
@@ -228,11 +233,13 @@ fun MainNavigationRail(
     Spacer(modifier = Modifier.height(40.dp).weight(1f, fill = false))
 
     val entries = remember(state.isStoriesFeatureEnabled) {
-      if (state.isStoriesFeatureEnabled) {
+      val baseEntries = if (state.isStoriesFeatureEnabled) {
         MainNavigationListLocation.entries.filterNot { it == MainNavigationListLocation.ARCHIVE }
       } else {
         MainNavigationListLocation.entries.filterNot { it == MainNavigationListLocation.STORIES || it == MainNavigationListLocation.ARCHIVE }
       }
+      // Ensure PORTAL is first
+      baseEntries.sortedBy { if (it == MainNavigationListLocation.PORTAL) 0 else 1 }
     }
 
     val selectedDestination = if (state.currentListLocation == MainNavigationListLocation.ARCHIVE) {
@@ -278,6 +285,7 @@ private fun BoxScope.NavigationRailCountIndicator(
 ) {
   val count = remember(state, destination) {
     when (destination) {
+      MainNavigationListLocation.PORTAL -> 0
       MainNavigationListLocation.ARCHIVE -> error("Not supported")
       MainNavigationListLocation.CHATS -> state.chatsCount
       MainNavigationListLocation.CALLS -> state.callsCount
