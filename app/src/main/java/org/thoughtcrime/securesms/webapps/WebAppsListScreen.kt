@@ -5,6 +5,8 @@
 
 package org.thoughtcrime.securesms.webapps
 
+import android.content.Context
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,9 +31,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import org.signal.core.ui.compose.theme.SignalTheme
+import org.thoughtcrime.securesms.R
 
 @Composable
 fun WebAppsListScreen(
@@ -90,13 +94,19 @@ fun WebAppsListScreen(
       }
     }
     filteredWebApps != null -> {
+      val context = LocalContext.current
       LazyColumn(
         modifier = modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
       ) {
         items(filteredWebApps!!) { app ->
-          WebAppItem(app = app)
+          WebAppItem(
+            app = app,
+            onClick = { entryUrl ->
+              context.startActivity(WebAppViewerActivity.createIntent(context, entryUrl))
+            }
+          )
         }
       }
     }
@@ -106,11 +116,13 @@ fun WebAppsListScreen(
 @Composable
 private fun WebAppItem(
   app: WebApp,
+  onClick: (String) -> Unit,
   modifier: Modifier = Modifier
 ) {
   Row(
     modifier = modifier
       .fillMaxWidth()
+      .clickable { onClick(app.entry) }
       .padding(vertical = 8.dp),
     horizontalArrangement = Arrangement.Start,
     verticalAlignment = Alignment.Top

@@ -105,7 +105,8 @@
                  android:allowBackup="true"
                  android:backupAgent=".absbackup.SignalBackupAgent"
                  android:theme="@style/TextSecure.LightTheme"
-                 android:largeHeap="true">
+                 android:largeHeap="true"
+                 android:networkSecurityConfig="@xml/network_security_config">
 
     <meta-data
             android:name="com.google.android.gms.wallet.api.enabled"
@@ -1088,6 +1089,11 @@
               android:exported="false"/>
 
     <activity android:name=".ratelimit.RecaptchaProofActivity"
+              android:theme="@style/Theme.Signal.DayNight.NoActionBar"
+              android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
+              android:exported="false"/>
+
+    <activity android:name=".webapps.WebAppViewerActivity"
               android:theme="@style/Theme.Signal.DayNight.NoActionBar"
               android:configChanges="touchscreen|keyboard|keyboardHidden|orientation|screenLayout|screenSize"
               android:exported="false"/>

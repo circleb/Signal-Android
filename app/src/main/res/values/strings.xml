@@ -641,6 +641,8 @@
     <string name="ConversationFragment__content_description_back_button">Navigate back.</string>
     <!-- Label for a button displayed in the conversation toolbar to open the main screen of the app. -->
     <string name="ConversationFragment__content_description_launch_signal_button">Open Signal</string>
+    <!-- Label for a button displayed in the web app viewer toolbar to navigate forward. -->
+    <string name="WebAppViewerActivity__content_description_forward_button">Navigate forward.</string>
     <!-- Dialog title shown when more than one contact in a group conversation is no longer verified -->
     <string name="ConversationFragment__no_longer_verified">No longer verified</string>
     <!-- Button shown in conversation header when in a message request state and no groups in common to show new message safety tips -->
