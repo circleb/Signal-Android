@@ -64,6 +64,14 @@ fun OnboardingMegaphone(
   modifier: Modifier = Modifier,
   onboardingState: OnboardingState = OnboardingState.rememberOnboardingState(megaphoneActionController)
 ) {
+  val onboardingItems = remember(onboardingState.displayState) {
+    OnboardingListItem.entries.filter(onboardingState.displayState::shouldDisplayListItem)
+  }
+
+  if (onboardingItems.isEmpty()) {
+    return
+  }
+
   Column(
     modifier = modifier
       .padding(bottom = 22.dp)
@@ -88,10 +96,6 @@ fun OnboardingMegaphone(
       modifier = Modifier.padding(start = 16.dp, top = 4.dp),
       color = MaterialTheme.colorScheme.onSurface
     )
-
-    val onboardingItems = remember(onboardingState.displayState) {
-      OnboardingListItem.entries.filter(onboardingState.displayState::shouldDisplayListItem)
-    }
 
     LazyRow(
       modifier = Modifier.padding(top = 10.dp)
@@ -336,10 +340,10 @@ abstract class OnboardingState private constructor(
    * Simple display state, driven by [SignalStore] by default.
    */
   data class DisplayState(
-    private val shouldShowNewGroup: Boolean = SignalStore.onboarding.shouldShowNewGroup(),
-    private val shouldShowInviteFriends: Boolean = SignalStore.onboarding.shouldShowInviteFriends(),
-    private val shouldShowAddPhoto: Boolean = SignalStore.onboarding.shouldShowAddPhoto() && !SignalStore.misc.hasEverHadAnAvatar,
-    private val shouldShowAppearance: Boolean = SignalStore.onboarding.shouldShowAppearance()
+    private val shouldShowNewGroup: Boolean = false,
+    private val shouldShowInviteFriends: Boolean = false,
+    private val shouldShowAddPhoto: Boolean = false,
+    private val shouldShowAppearance: Boolean = false
   ) {
     fun hasNoVisibleContent(): Boolean = !(shouldShowNewGroup || shouldShowInviteFriends || shouldShowAddPhoto || shouldShowAppearance)
 
