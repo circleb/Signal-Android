@@ -70,6 +70,10 @@ enum class MainNavigationListLocation(
     label = R.string.ConversationListTabs__portal,
     icon = R.raw.portal_28
   ),
+  STORIES(
+    label = R.string.ConversationListTabs__stories,
+    icon = R.raw.stories_28
+  ),
   CHATS(
     label = R.string.ConversationListTabs__chats,
     icon = R.raw.chats_28
@@ -81,10 +85,6 @@ enum class MainNavigationListLocation(
   CALLS(
     label = R.string.ConversationListTabs__calls,
     icon = R.raw.calls_28
-  ),
-  STORIES(
-    label = R.string.ConversationListTabs__stories,
-    icon = R.raw.stories_28
   )
 }
 

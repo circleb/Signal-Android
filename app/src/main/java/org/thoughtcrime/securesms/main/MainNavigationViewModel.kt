@@ -39,7 +39,7 @@ import java.util.Optional
 
 @OptIn(ExperimentalMaterial3AdaptiveApi::class)
 class MainNavigationViewModel(
-  initialListLocation: MainNavigationListLocation = MainNavigationListLocation.CHATS
+  initialListLocation: MainNavigationListLocation = MainNavigationListLocation.PORTAL
 ) : ViewModel(), MainNavigationRouter {
   private val megaphoneRepository = AppDependencies.megaphoneRepository
 

@@ -216,7 +216,7 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
 
   private val mainNavigationViewModel: MainNavigationViewModel by viewModel {
     val startingTab = intent.extras?.getSerializableCompat(KEY_STARTING_TAB, MainNavigationListLocation::class.java)
-    MainNavigationViewModel(startingTab ?: MainNavigationListLocation.CHATS)
+    MainNavigationViewModel(startingTab ?: MainNavigationListLocation.PORTAL)
   }
 
   private val vitalsViewModel: VitalsViewModel by viewModel {
@@ -325,6 +325,13 @@ class MainActivity : PassphraseRequiredActivity(), VoiceNoteMediaControllerOwner
           MainNavigationListLocation.ARCHIVE -> toolbarViewModel.presentToolbarForConversationListArchiveFragment()
           MainNavigationListLocation.CALLS -> toolbarViewModel.presentToolbarForCallLogFragment()
           MainNavigationListLocation.STORIES -> toolbarViewModel.presentToolbarForStoriesLandingFragment()
+        }
+      }
+
+      // Portal uses a Compose screen instead of a fragment, so we need to call onFirstRender() manually
+      LaunchedEffect(mainNavigationState.currentListLocation) {
+        if (mainNavigationState.currentListLocation == MainNavigationListLocation.PORTAL && !onFirstRender) {
+          onFirstRender()
         }
       }
 
