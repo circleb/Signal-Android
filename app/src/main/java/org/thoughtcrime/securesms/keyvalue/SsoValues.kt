@@ -18,13 +18,13 @@ class SsoValues internal constructor(store: KeyValueStore) : SignalStoreValues(s
     private const val KEY_AUTH_STATE = "sso.auth.state"
   }
 
-  override fun onFirstEverAppLaunch() {
+  public override fun onFirstEverAppLaunch() {
     userInfo = null
     authState = null
   }
 
-  override fun getKeysToIncludeInBackup(): List<String> = emptyList()
+  public override fun getKeysToIncludeInBackup(): List<String> = emptyList()
 
-  var userInfo by stringValue(KEY_USER_INFO, null)
-  var authState by stringValue(KEY_AUTH_STATE, null)
+  var userInfo: String? by stringValue(KEY_USER_INFO, null)
+  var authState: String? by stringValue(KEY_AUTH_STATE, null)
 }

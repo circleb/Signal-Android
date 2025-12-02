@@ -10,6 +10,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import kotlinx.serialization.decodeFromString
@@ -53,7 +54,7 @@ class HeritageSsoService(
   private val authorizationService: AuthorizationService by lazy { AuthorizationService(context) }
 
   private var authState: AuthState? = SignalStore.sso.authState?.let { storedState ->
-    runCatching { AuthState.jsonDeserialize(storedState) }.getOrNull()
+    runCatching { AuthState.jsonDeserialize(storedState as String) }.getOrNull()
   }
 
   fun createAuthorizationRequest(loginHint: String? = null): AuthorizationRequest {
@@ -84,7 +85,8 @@ class HeritageSsoService(
     val exception = AuthorizationException.fromIntent(intent)
 
     if (response == null) {
-      if (exception?.code == AuthorizationException.GeneralErrors.USER_CANCELED.code) {
+      // Check if user cancelled by examining the error
+      if (exception != null && exception.error == "user_cancelled") {
         throw SSOError.UserCancelled
       }
       throw SSOError.ServerError(exception?.errorDescription)
@@ -103,8 +105,12 @@ class HeritageSsoService(
           exception != null -> continuation.resumeWithException(SSOError.NetworkError(exception))
           accessToken.isNullOrBlank() -> continuation.resumeWithException(SSOError.InvalidToken)
           else -> {
+            // Note: fetchAndPersistUserInfo is a suspend function, but we're in a callback
+            // Use runBlocking to bridge the suspend function call
             val result = runCatching {
-              fetchAndPersistUserInfo(accessToken, state.refreshToken)
+              runBlocking {
+                fetchAndPersistUserInfo(accessToken, state.refreshToken)
+              }
             }
             if (result.isSuccess) {
               continuation.resume(result.getOrThrow())
@@ -134,7 +140,7 @@ class HeritageSsoService(
     val newAuthState = authState ?: AuthState(serviceConfiguration)
     newAuthState.update(tokenResponse, authorizationException)
     authState = newAuthState
-    SignalStore.sso.authState = newAuthState.jsonSerializeString()
+    SignalStore.sso.authState = newAuthState.jsonSerialize().toString()
 
     val accessToken = tokenResponse.accessToken ?: throw SSOError.InvalidToken
     return fetchAndPersistUserInfo(accessToken, tokenResponse.refreshToken)

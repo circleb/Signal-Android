@@ -188,6 +188,7 @@ android {
     project.ext.set("archivesBaseName", "Signal")
 
     manifestPlaceholders["mapsKey"] = "AIzaSyCSx9xea86GwDKGznCAULE9Y5a8b-TfN9U"
+    manifestPlaceholders["appAuthRedirectScheme"] = "org.thoughtcrime.securesms"
 
     buildConfigField("long", "BUILD_TIMESTAMP", getLastCommitTimestamp() + "L")
     buildConfigField("String", "GIT_HASH", "\"${getGitHash()}\"")
