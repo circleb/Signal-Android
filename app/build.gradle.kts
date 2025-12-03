@@ -24,10 +24,13 @@ apply(from = "static-ips.gradle.kts")
 
 val canonicalVersionCode = 1623
 val canonicalVersionName = "7.66.3"
-val currentHotfixVersion = 0
+val currentHotfixVersion = 1
 val maxHotfixVersions = 100
 
-val keystores: Map<String, Properties?> = mapOf("debug" to loadKeystoreProperties("keystore.debug.properties"))
+val keystores: Map<String, Properties?> = mapOf(
+  "debug" to loadKeystoreProperties("keystore.debug.properties"),
+  "release" to loadKeystoreProperties("keystore.release.properties")
+)
 
 val selectableVariants = listOf(
   "nightlyBackupRelease",
@@ -108,6 +111,21 @@ android {
     }
   }
 
+  signingConfigs.create("release") {
+    keystores["release"]?.let { properties ->
+      val storeFilePath = properties.getProperty("storeFile")
+      // Handle both absolute and relative paths
+      storeFile = if (file(storeFilePath).isAbsolute) {
+        file(storeFilePath)
+      } else {
+        file("${project.rootDir}/$storeFilePath")
+      }
+      storePassword = properties.getProperty("storePassword")
+      keyAlias = properties.getProperty("keyAlias")
+      keyPassword = properties.getProperty("keyPassword")
+    }
+  }
+
   testOptions {
     execution = "ANDROIDX_TEST_ORCHESTRATOR"
 
@@ -178,6 +196,7 @@ android {
   }
 
   defaultConfig {
+    applicationId = "org.homesteadheritage.hcp"
     versionCode = (canonicalVersionCode * maxHotfixVersions) + currentHotfixVersion
     versionName = canonicalVersionName
 
@@ -188,7 +207,7 @@ android {
     project.ext.set("archivesBaseName", "Signal")
 
     manifestPlaceholders["mapsKey"] = "AIzaSyCSx9xea86GwDKGznCAULE9Y5a8b-TfN9U"
-    manifestPlaceholders["appAuthRedirectScheme"] = "org.thoughtcrime.securesms"
+    manifestPlaceholders["appAuthRedirectScheme"] = "org.homesteadheritage.hcp"
 
     buildConfigField("long", "BUILD_TIMESTAMP", getLastCommitTimestamp() + "L")
     buildConfigField("String", "GIT_HASH", "\"${getGitHash()}\"")
@@ -298,6 +317,9 @@ android {
     }
 
     getByName("release") {
+      if (keystores["release"] != null) {
+        signingConfig = signingConfigs["release"]
+      }
       isMinifyEnabled = true
       proguardFiles(*buildTypes["debug"].proguardFiles.toTypedArray())
       buildConfigField("String", "BUILD_VARIANT_TYPE", "\"Release\"")
